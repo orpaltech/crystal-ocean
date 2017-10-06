@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using CrystalOcean.Data.Models.Repository;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrystalOcean.Data.Models.Repository

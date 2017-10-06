@@ -16,5 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\crystalocean.models\crystalocean.models.csproj" />
+    <ProjectReference Include="..\crystalocean.core\crystalocean.core.csproj" />
   </ItemGroup>
 </Project>
