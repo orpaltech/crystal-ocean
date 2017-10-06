@@ -1,0 +1,78 @@
+{
+   // Use IntelliSense to find out which attributes exist for C# debugging
+   // Use hover for the description of the existing attributes
+   // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+   "version": "0.2.0",
+   "configurations": [
+        {
+            "name": "CrystalOcean.Web",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_web",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceRoot}/crystalocean.web/bin/Debug/netcoreapp2.0/crystalocean.web.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/crystalocean.web/",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceRoot}/Views"
+            }
+        },
+        {
+            "name": "CrystalOcean.ImageWebApi",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_imagewebapi",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceRoot}/crystalocean.imagewebapi/bin/Debug/netcoreapp2.0/crystalocean.imagewebapi.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/crystalocean.imagewebapi/",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}/api/users",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceRoot}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ]
+}
