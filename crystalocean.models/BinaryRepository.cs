@@ -1,7 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Npgsql;
 
 namespace CrystalOcean.Data.Models.Repository
 {
@@ -12,20 +17,136 @@ namespace CrystalOcean.Data.Models.Repository
         {
         }
 
+        public DbSet<Image> Images { get; set; }
+
+        public TEntity Insert<TEntity>(TEntity binary, Stream input) where TEntity : Binary
+        {
+            using (var trans = this.Database.BeginTransaction())
+            {
+                if (!input.CanRead)
+                    throw new Exception("Invalid stream.");
+                WriteLargeObject(binary, input);
+
+                this.Entry(binary).State = EntityState.Added;
+                this.SaveChanges();
+                trans.Commit();
+                
+                return binary;
+            }
+        }
+
+        public async Task<TEntity> InsertAsync<TEntity>(TEntity binary, Func<Stream, Task> action) where TEntity : Binary
+        {
+            using (var trans = this.Database.BeginTransaction())
+            {
+                // Retrieve a Large Object Manager for the connection
+                var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
+                // Create a new empty file, returning the identifier to later access it
+                uint oid = manager.Create();
+                //var cancel = new CancellationTokenSource();
+                Stream output;
+                using (output = manager.OpenReadWrite(oid))
+                {
+                    await action(output);
+                }
+                binary.ObjectId = oid;
+                trans.Commit();
+                this.Entry(binary).State = EntityState.Added;
+                this.SaveChanges();
+                return binary;
+            }
+        }
+
+        public void Delete<TEntity>(TEntity binary) where TEntity : Binary
+        {
+            using (var trans = this.Database.BeginTransaction())
+            {
+                // Retrieve a Large Object Manager for the connection
+                var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
+                manager.Unlink(binary.ObjectId);  
+
+                this.Remove(binary);
+                this.SaveChanges();
+            }
+        }
+
+        public async Task<TEntity> ExportToStream<TEntity>(TEntity binary, Stream output) where TEntity : Binary
+        {
+            using (var trans = this.Database.BeginTransaction())
+            {
+                if (!output.CanWrite)
+                    throw new Exception("Invalid stream.");
+                await ReadLargeObject(binary, output);
+                output.Close();
+            }
+            return binary;
+        }
+
+        public async Task<TEntity> ExportToFile<TEntity>(TEntity binary, String path) where TEntity : Binary
+        {
+            using (var trans = this.Database.BeginTransaction())
+            {
+                using (var output = new FileStream(path, FileMode.Create))
+                {
+                    await ReadLargeObject(binary, output);   
+                }
+            }
+            return binary;
+        }
+
+        private void WriteLargeObject<TEntity>(TEntity binary, Stream input) where TEntity : Binary
+        {
+            // Retrieve a Large Object Manager for the connection
+            var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
+            // Create a new empty file, returning the identifier to later access it
+            uint oid = manager.Create();
+            using (var output = manager.OpenReadWrite(oid))
+            {
+                input.CopyTo(output);
+            }
+            binary.ObjectId = oid;
+        }
+
+        private async Task<TEntity> ReadLargeObject<TEntity>(TEntity binary, Stream output) where TEntity : Binary
+        {
+            var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
+            using (var input = manager.OpenRead(binary.ObjectId))
+            {
+                await input.CopyToAsync(output);
+            }
+            return binary;
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Binary>().HasKey(m => m.Id);
+            builder.Entity<Binary>().HasDiscriminator<String>("Type").HasValue<Image>("Image");
+    
+            //builder.Entity<Binary>()
+            //    .Map<Image>(m => m.Requires("Discriminator").HasValue("Image"));
+
             // shadow properties
-            builder.Entity<Binary>().Property<Nullable<DateTime>>("UpdateTime");
- 
+            builder.Entity<Image>().Property<Nullable<DateTime>>("UpdateTime");
+
             base.OnModelCreating(builder);
         }
 
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
-
+            UpdateProperties<Image>();
             return base.SaveChanges();
+        }
+
+        private void UpdateProperties<TEntity>() where TEntity : Binary
+        {
+            var modifiedSourceInfo =
+                ChangeTracker.Entries<TEntity>()
+                    .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in modifiedSourceInfo)
+            {
+                entry.Property("UpdateTime").CurrentValue = DateTime.UtcNow;
+            }
         }
     }
 }

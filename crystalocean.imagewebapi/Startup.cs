@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CrystalOcean.Data.Models;
 using CrystalOcean.Data.Models.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,35 +31,42 @@ namespace CrystalOcean.ImageWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = this.Configuration["DbContextSettings:ConnectionString"];
-            services.AddDbContext<UserRepository>(
-                opts => opts.UseNpgsql(connectionString)
-            );
+            ConfigureRepositories(services);
 
-            JsonOutputFormatter jsonOutputFormatter = new JsonOutputFormatter(
+            JsonOutputFormatter jsonFormatter = new JsonOutputFormatter(
                 new JsonSerializerSettings {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 }, 
                 ArrayPool<Char>.Create()
             );
-
             services.AddMvc(
                 opts => {
                     opts.OutputFormatters.Clear();
-                    opts.OutputFormatters.Insert(0, jsonOutputFormatter);
+                    opts.OutputFormatters.Insert(0, jsonFormatter);
                 }
             );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+            
             if (env.IsDevelopment()) 
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseMvc();
+        }
+
+        private void ConfigureRepositories(IServiceCollection services)
+        {
+            var connectionString = this.Configuration["DbContextSettings:ConnectionString"];
+            services.AddDbContext<UserRepository>(
+                opts => opts.UseNpgsql(connectionString));
+            services.AddDbContext<BinaryRepository>(
+                opts => opts.UseNpgsql(connectionString));
         }
     }
 }

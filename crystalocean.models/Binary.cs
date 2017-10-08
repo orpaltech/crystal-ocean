@@ -1,22 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 
 namespace CrystalOcean.Data.Models
 {
-    [Table("Binary")]
-    public class Binary
+    public abstract class Binary
     {
-        [Key]
         public long Id { get; set; }
 
-        public User User { get; set; }
+        public long UserId { get; set; }
 
         public uint ObjectId { get; set;}
 
         public String Checksum { get; set;}
-
-        [NotMapped]
-        public String FileName { get; set;}
     }
 }

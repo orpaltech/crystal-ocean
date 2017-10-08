@@ -25,12 +25,12 @@ namespace CrystalOcean.Data.Models.Repository
         {
             ChangeTracker.DetectChanges();
  
-            UpdateShadowProperties<User>();
+            UpdateProperties<User>();
 
             return base.SaveChanges();
         }
  
-        private void UpdateShadowProperties<T>() where T : class
+        private void UpdateProperties<T>() where T : class
         {
             var modifiedSourceInfo =
                 ChangeTracker.Entries<T>()

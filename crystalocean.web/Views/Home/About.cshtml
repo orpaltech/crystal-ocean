@@ -5,3 +5,22 @@
 <h3>@ViewData["Message"]</h3>
 
 <p>Use this area to provide additional information.</p>
+
+<form method="post" enctype="multipart/form-data" action="http://localhost:5002/images/upload">
+    <div>
+        <p>Upload one or more images using this form:</p>
+        <input type="file" name="files" multiple />
+    </div>
+    <div>
+        <p>Image name</p>
+        <input type="text" name="name" />
+    </div>
+    <div>
+        <p>Image description</p>
+        <input type="text" name="description" />
+    </div>
+    <div>
+         <input type="submit" value="upload" />
+    </div>
+</form>
+
