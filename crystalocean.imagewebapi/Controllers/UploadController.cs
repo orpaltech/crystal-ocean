@@ -26,21 +26,29 @@ namespace CrystalOcean.ImageWebApi.Controllers
         [DisableFormValueModelBinding]
         public async Task<IActionResult> Index()
         {
-            Image img = new Image();
-            img.UserId = 1;
-            img.Checksum = "blabla";
-            img.Width = 100;
-            img.Height = 200;
+            Image binary = new Image();
+            binary.UserId = 1;
+            binary.Checksum = "";
+            binary.Width = 100;
+            binary.Height = 200;
 
-            FormValueProvider formModel = null;
-            img = await _binaryRepository.InsertAsync(img, async (stream) => {
-                formModel = await Request.StreamFile(stream);
-            });
+            FormValueProvider formProvider = null;
+            binary = await _binaryRepository.InsertAsync(
+                binary, 
+                async (stream) => 
+                {
+                    formProvider = await Request.StreamFile(stream);
+                }
+            );
 
-            await _binaryRepository.ExportToFile(img, "/home/sergey/Projects/crystalocean/image.tmp");
+            //await _binaryRepository.ExportToFileAsync(img, "/home/sergey/Projects/crystalocean/image.tmp");
 
             var viewModel = new ImageUploadModel(); 
-            var bindingSuccessful = await TryUpdateModelAsync(viewModel, prefix: "", valueProvider: formModel);
+            var bindingSuccessful = await TryUpdateModelAsync(
+                viewModel, 
+                prefix: "", 
+                valueProvider: formProvider
+            );
 
             if (!bindingSuccessful)
             {

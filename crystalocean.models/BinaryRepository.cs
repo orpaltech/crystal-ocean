@@ -39,13 +39,9 @@ namespace CrystalOcean.Data.Models.Repository
         {
             using (var trans = this.Database.BeginTransaction())
             {
-                // Retrieve a Large Object Manager for the connection
-                var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
-                // Create a new empty file, returning the identifier to later access it
+                var manager = CreateLargeObjectManager();
                 uint oid = manager.Create();
-                //var cancel = new CancellationTokenSource();
-                Stream output;
-                using (output = manager.OpenReadWrite(oid))
+                using (Stream output = manager.OpenReadWrite(oid))
                 {
                     await action(output);
                 }
@@ -62,15 +58,13 @@ namespace CrystalOcean.Data.Models.Repository
             using (var trans = this.Database.BeginTransaction())
             {
                 // Retrieve a Large Object Manager for the connection
-                var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
-                manager.Unlink(binary.ObjectId);  
-
+                CreateLargeObjectManager().Unlink(binary.ObjectId);  
                 this.Remove(binary);
                 this.SaveChanges();
             }
         }
 
-        public async Task<TEntity> ExportToStream<TEntity>(TEntity binary, Stream output) where TEntity : Binary
+        public async Task<TEntity> ExportToStreamAsync<TEntity>(TEntity binary, Stream output) where TEntity : Binary
         {
             using (var trans = this.Database.BeginTransaction())
             {
@@ -82,7 +76,7 @@ namespace CrystalOcean.Data.Models.Repository
             return binary;
         }
 
-        public async Task<TEntity> ExportToFile<TEntity>(TEntity binary, String path) where TEntity : Binary
+        public async Task<TEntity> ExportToFileAsync<TEntity>(TEntity binary, String path) where TEntity : Binary
         {
             using (var trans = this.Database.BeginTransaction())
             {
@@ -96,9 +90,7 @@ namespace CrystalOcean.Data.Models.Repository
 
         private void WriteLargeObject<TEntity>(TEntity binary, Stream input) where TEntity : Binary
         {
-            // Retrieve a Large Object Manager for the connection
-            var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
-            // Create a new empty file, returning the identifier to later access it
+            var manager = CreateLargeObjectManager();
             uint oid = manager.Create();
             using (var output = manager.OpenReadWrite(oid))
             {
@@ -109,23 +101,27 @@ namespace CrystalOcean.Data.Models.Repository
 
         private async Task<TEntity> ReadLargeObject<TEntity>(TEntity binary, Stream output) where TEntity : Binary
         {
-            var manager = new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
-            using (var input = manager.OpenRead(binary.ObjectId))
+            using (var input = CreateLargeObjectManager().OpenRead(binary.ObjectId))
             {
                 await input.CopyToAsync(output);
             }
             return binary;
         }
 
+        private NpgsqlLargeObjectManager CreateLargeObjectManager()
+        {
+            return new NpgsqlLargeObjectManager(this.Database.GetDbConnection() as NpgsqlConnection);
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Binary>().HasDiscriminator<String>("Type").HasValue<Image>("Image");
-    
-            //builder.Entity<Binary>()
-            //    .Map<Image>(m => m.Requires("Discriminator").HasValue("Image"));
+            builder.Entity<Binary>()
+                .HasDiscriminator<String>("Type")
+                .HasValue<Image>("Image");
 
             // shadow properties
-            builder.Entity<Image>().Property<Nullable<DateTime>>("UpdateTime");
+            builder.Entity<Image>()
+                .Property<Nullable<DateTime>>("UpdateTime");
 
             base.OnModelCreating(builder);
         }
