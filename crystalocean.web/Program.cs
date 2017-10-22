@@ -20,6 +20,21 @@ namespace CrystalOcean.Web
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .ConfigureAppConfiguration((hostingContext, builder) => 
+                {
+                    var env = hostingContext.HostingEnvironment;
+                    if (env.IsDevelopment())
+                    {
+                        builder.AddUserSecrets<Startup>();
+                    }
+                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    var config = hostingContext.Configuration;
+                    logging.AddConfiguration(config.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                })
                 .UseUrls("http://localhost:5001")
                 .Build();
     }

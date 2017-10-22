@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-size:14px;
 }
 
 /* Wrapping element */
@@ -19,6 +20,10 @@
 /* Make .svg files in the carousel display properly in older browsers */
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;
+}
+
+.navbar-inverse .navbar-nav > li > .btn-link:hover {
+    text-decoration: none;
 }
 
 /* QR code generator */

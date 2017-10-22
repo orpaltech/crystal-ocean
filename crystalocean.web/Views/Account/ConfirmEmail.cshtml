@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Confirm email";
+    ViewData["Message"] = "Your email has been confirmed.";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs">
+    <li><a asp-area="" asp-controller="Account" asp-action="Login">Sign in</a></li>
+    <li><a asp-area="" asp-controller="Account" asp-action="Register">Sign up</a></li>
+    <li class="active"><a href="javascript:;">Confirm email</a></li>
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div class="tab-pane active">
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9">
+                <p>
+                    Thank you for confirming your email. Please <a asp-action="Login">click here to sign in</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

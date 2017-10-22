@@ -26,6 +26,17 @@
             },
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "bundle_web",
+            "command": "dotnet",
+            "isShellCommand": true,
+            "args": [
+                "bundle"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/crystalocean.web/"
+            }
         }
     ]
 }

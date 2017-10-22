@@ -1,0 +1,59 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Head
+{
+    <environment include="Development">
+        <!-- load the CSS files in the right order -->
+        <link href="~/lib/bootstrap-fileinput/css/fileinput.css" rel="stylesheet">
+        <link href="~/lib/bootstrap-fileinput/themes/explorer/theme.css" rel="stylesheet">
+        <link href="~/css/filemanager/filemanager.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <!-- load the CSS files in the right order -->
+        <link href="~/lib/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet">
+        <link href="~/lib/bootstrap-fileinput/themes/explorer/theme.min.css" rel="stylesheet">
+        <link href="~/css/filemanager/filemanager.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+
+    @RenderSection("Head", required: false)
+}
+
+<div class="filemanager-content">
+    <div class="row filemanager-header">
+        <div class="col-md-12">
+            <h2>@ViewData["Title"]</h2>
+            <h4>@ViewData["Message"]</h4>
+        </div>
+    </div>
+    <div class="row filemanager-body">
+        <!-- render body here -->
+        @RenderBody()
+    </div>
+    <div class="row filemanager-footer">
+    </div>
+</div>
+
+@section Scripts
+{
+    <environment include="Development">
+        <!-- load the JS files in the right order -->
+        <script src="~/lib/bootstrap-fileinput/js/plugins/piexif.js"></script>
+        <script src="~/lib/bootstrap-fileinput/js/plugins/sortable.js"></script>
+        <script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
+        <script src="~/lib/bootstrap-fileinput/themes/explorer/theme.js"></script>
+        <script src="~/js/filemanager/filemanager.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <!-- load the JS files in the right order -->
+        <script src="~/lib/bootstrap-fileinput/js/plugins/piexif.min.js"></script>
+        <script src="~/lib/bootstrap-fileinput/js/plugins/sortable.min.js"></script>
+        <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
+        <script src="~/lib/bootstrap-fileinput/themes/explorer/theme.min.js"></script>
+        <script src="~/js/filemanager/filemanager.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+}
+

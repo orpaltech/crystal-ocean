@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Locked out";
+    ViewData["Message"] = "This account has been locked out.";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs">
+    <li><a asp-area="" asp-controller="Account" asp-action="Login">Sign in</a></li>
+    <li><a asp-area="" asp-controller="Account" asp-action="Register">Sign up</a></li>
+    <li class="active"><a href="javascript:;">Locked out</a></li>
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div class="tab-pane active">
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9">
+                <p>
+                    This account has been locked out, please try again later.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "File Manager";
+    ViewData["Message"] = "Manage your uploaded files.";
+    Layout = "~/Views/Shared/_FileManagerLayout.cshtml";
+}
+
+@section Head 
+{
+    <script type="text/javascript">
+        var uploadUrl = '@ViewData["ImageWebApiUrl"]' + '/upload';
+    </script>
+} 
+
+<div class="file-loading">
+    <input id="input-ke-1" name="input-ke-1[]" type="file" multiple accept="image">
+</div>

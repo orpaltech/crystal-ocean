@@ -1,0 +1,37 @@
+@model ExternalLoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+ /*   ViewData["Message"] = "Associate your @ViewData["LoginProvider"] account.";*/
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs">
+    <li class="active"><a href="javascript:;">Sign in</a></li>
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div class="tab-pane active">
+        <p class="text-info">
+            You have successfully authenticated with <strong>@ViewData["LoginProvider"]</strong>.
+            Please, enter an email address for this site below and click the button to finish signing in.
+        </p>
+
+        <form role="form" class="form-horizontal" asp-action="ExternalLoginConfirmation" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="col-sm-3 control-label">Email</label>
+                <div class="col-sm-9">
+                    <input asp-for="Email" type="email" class="form-control" placeholder="Email"><span 
+                        asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row" style="clear: right;">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-9">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

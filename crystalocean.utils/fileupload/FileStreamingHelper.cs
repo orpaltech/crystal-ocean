@@ -1,8 +1,10 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using CrystalOcean.Utils.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -42,7 +44,8 @@ namespace CrystalOcean.Utils.FileUpload
                 {
                     if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                     {
-                        await section.Body.CopyToAsync(targetStream);
+                        var checksum = await CopyStreamAsync(section.Body, targetStream);
+                        formAccumulator.Append("Checksum", checksum);
                     }
                     else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
                     {
@@ -102,6 +105,28 @@ namespace CrystalOcean.Utils.FileUpload
                 return Encoding.UTF8;
             }
             return mediaType.Encoding;
+        }
+
+        private static Task<String> CopyStreamAsync(Stream input, Stream output)
+        {
+            return Task<String>.Factory.StartNew(() => 
+            {
+                using (var sha1 = SHA1.Create())
+                {
+                    byte[] buffer = new byte[8192];
+                    int count;
+                    while ((count = input.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        sha1.TransformBlock(buffer, 0, count, buffer, 0);
+                    }
+                    // We have to call TransformFinalBlock, but we have no 
+                    // more data - just provide 0 bytes
+                    sha1.TransformFinalBlock(buffer, 0, 0);
+                    
+                    return new StringBuilder()
+                        .AppendHex(sha1.Hash).ToString();
+                }
+            });
         }
     }
 }

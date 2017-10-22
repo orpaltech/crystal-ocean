@@ -1,0 +1,10 @@
+@using Microsoft.AspNetCore.Identity
+@using CrystalOcean.Data.Models
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <li><a asp-area="" asp-controller="FileManager" asp-action="Index">My Files</a></li>
+}

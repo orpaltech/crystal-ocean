@@ -1,0 +1,88 @@
+@using Microsoft.AspNetCore.Identity
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Authentication
+@using CrystalOcean.Data.Models
+@inject SignInManager<User> SignInManager
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Head {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-social/bootstrap-social.css" />
+        <link rel="stylesheet" href="~/css/account/account.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-social/bootstrap-social.css" />
+        <link rel="stylesheet" href="~/css/account/account.min.css" asp-append-version="true" />
+    </environment>
+}
+
+<div class="account-content col-md-12">
+    <div class="row account-header">
+        <div class="col-md-12">
+            <h2>@ViewData["Title"]</h2>
+            <h4>@ViewData["Message"]</h4>
+        </div>
+    </div>
+
+    <div class="row account-body">
+        <div class="col-md-8 sign-manual">
+            @RenderBody()
+            <div id="OR" class="hidden-xs">
+                OR</div>
+        </div>
+        <div class="col-md-4 sign-social">
+            <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+            <div class="row text-center">
+                <div class="col-md-12">
+                    <h3>Sign in with</h3>
+                </div>
+                <div class="col-md-12">
+                    <div class="btn-group btn-group-justified">
+                        <button type="submit" class="btn btn-social btn-facebook" 
+                            name="provider" value="Facebook" 
+                            title="Log in using your Facebook account"><span class="fa fa-facebook"></span>
+                            Facebook
+                        </button>
+                        
+                        <button type="submit" class="btn btn-social btn-google" 
+                            name="provider" value="Google" 
+                            title="Log in using your Google account"><span class="fa fa-google"></span>
+                            Google
+                        </button>
+                    </div>
+                </div>
+                <!--<div class="col-md-12">
+                    <div class="btn-group btn-group-justified">
+                        <a class="btn btn-block btn-social btn-twitter">
+                            <span class="fa fa-twitter"></span>
+                            Twitter
+                        </a>
+                        <a class="btn btn-block btn-social btn-openid">
+                            <span class="fa fa-openid"></span>
+                            OpenID
+                        </a>
+                    </div>
+                </div>-->
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row account-footer">
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/account/account.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/account/account.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

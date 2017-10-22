@@ -1,0 +1,9 @@
+/* File manager page rules */
+div.filemanager-content {
+    font-size:16px;
+}
+
+/* Upload explorer custom rules */
+div.filemanager-content .file-footer-buttons .btn-kv {
+    font-size: 0.875em;
+}

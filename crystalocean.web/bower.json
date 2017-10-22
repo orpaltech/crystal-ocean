@@ -5,6 +5,10 @@
     "bootstrap": "3.3.7",
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
-    "jquery-validation-unobtrusive": "3.2.6"
+    "jquery-validation-unobtrusive": "3.2.6",
+    "bootstrap-fileinput": "~4.4.5",
+    "font-awesome": "Font-Awesome#~4.7.0",
+    "bootstrap-social": "~5.1.1",
+    "bootstrap-checkbox-x": "~1.5.4"
   }
 }
